@@ -11,31 +11,49 @@ const old = () => {
 
 const newV = () => {
   console.time()
-  const readable =  createReadStream('file-small.csv', { highWaterMark: 20 })
-  // var comas = 0 //sumar 4
+  const readable =  createReadStream('file.csv', { highWaterMark: 40 })
+  
+  let newLineI = '' 
   let newLine = ''
- 
-  // console.log('asdf',readable)
+   
   readable.on('data', chunk => {
+    // console.log({data: chunk.toString()})
+
     const chunky =  chunk.toString().split('')
     // console.log(chunky)
+
+    //solucion para un salto de linea por chunk \n    
     const index = chunky.findIndex( letter => letter == '\n')
-    console.log('index:',index)
-    console.log({data: chunk.toString()})
+    // console.log('index:',index)
+    
     if(index == -1){
       const chunkon = chunk.toString()
-      newLine += chunkon
-      console.log('-1:',chunkon)
+      newLineI += chunkon
+      // console.log('-1:',chunkon)
     } else {
-      newLine += (chunky.slice(0,index).join(''))
+      newLineI += (chunky.slice(0,index).join(''))
 
-      console.log('liniea:', newLine)
+      // console.log('liniea:', newLine)
+      newLineI = ''
+      newLineI += (chunky.slice(index).join(''))
+    }    
 
-      newLine = ''
-      newLine += (chunky.slice(index).join(''))
+    
+    //solucion dinámica para cualquier longitud.
+    
+    // let indexSlice = 0
+    for(let i = 0; i < chunky.length; i++){
+      if(chunky[i] === '\n'){
+        // newLine += chunky.slice(indexSlice, i)
+        newLine += chunky[i]
+        console.log('linea entera:', newLine)
+        newLine = ''
+        continue
+        // indexSlice = i
+      }
+      newLine += chunky[i]
     }
   })
-
 
   readable.on('end', () => {
     console.log('finished!')
