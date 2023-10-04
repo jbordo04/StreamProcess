@@ -32,10 +32,10 @@ const newLine = () => {
   })
 }
 
-// default: 3.872s
+// default: 3.872s ==> 978.47ms Utilizando los slice.
 const newV = () => {
   console.time()
-  const readable =  createReadStream('file.csv')
+  const readable =  createReadStream('file.csv', { highWaterMark: 20 })
   
   let newLineI = '' 
   let newLine = ''
@@ -44,38 +44,20 @@ const newV = () => {
     // console.log({data: chunk.toString()})
 
     const chunky =  chunk.toString()
-    // console.log(chunky)
-
-    //solucion para un salto de linea por chunk \n    
-    // const index = chunky.findIndex( letter => letter == '\n')
-    // console.log('index:',index)
-    
-    // if(index == -1){
-    //   const chunkon = chunk.toString()
-    //   newLineI += chunkon
-    //   // console.log('-1:',chunkon)
-    // } else {
-    //   newLineI += (chunky.slice(0,index).join(''))
-
-    //   // console.log('liniea:', newLine)
-    //   newLineI = ''
-    //   newLineI += (chunky.slice(index).join(''))
-    // }    
-
-
-    //solucion dinámica para cualquier longitud.
-    
-    // let indexSlice = 0
+       
+    let indexSlice = 0
     for(let i = 0; i < chunky.length; i++){
       if(chunky[i] === '\n'){
-        // newLine += chunky.slice(indexSlice, i)
-        newLine += chunky[i]
+
+        newLine += chunky.slice(indexSlice, i)
+        // newLine += chunky[i]
         console.log(newLine)
         newLine = ''
-        // indexSlice = i
-      } else {
-        newLine += chunky[i]
-      }
+        indexSlice = i
+      } 
+      // else {
+      //   newLine += chunky[i]
+      // }
     }
   })
 
